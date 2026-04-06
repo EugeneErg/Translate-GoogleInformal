@@ -1,0 +1,22 @@
+{
+  "name": "euge-erg/translate-google-informal",
+  "description": "Text translation using multiple neural network APIs",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "EugeneErg\\TranslateGoogleInformal\\": "src/"
+    }
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "euge-erg/translate": "^1.0",
+    "psr/simple-cache": "^3.0",
+    "psr/cache": "^3.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "infection/extension-installer": true
+    }
+  }
+}
