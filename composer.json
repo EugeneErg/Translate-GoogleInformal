@@ -5,7 +5,7 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "EugeneErg\\TranslateGoogleInformal\\": "src/"
+      "EugeneErg\\GoogleInformalIcuI18nTranslator\\": "src/"
     }
   },
   "minimum-stability": "stable",
