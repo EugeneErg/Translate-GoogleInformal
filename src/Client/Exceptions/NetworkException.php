@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace EugeneErg\GoogleInformalIcuI18nTranslator\Client\Exceptions;
 
-class NetworkException extends ClientException {}
+class NetworkException extends ClientException
+{
+}

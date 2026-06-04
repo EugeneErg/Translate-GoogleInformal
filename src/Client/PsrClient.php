@@ -17,22 +17,23 @@ final readonly class PsrClient implements BaseClientInterface
         private ClientInterface $client,
         private RequestFactoryInterface $requestFactory,
         private StreamFactoryInterface $streamFactory,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ClientExceptionInterface
      */
-    public function sendRequest(string $method, string $uri, ?string $body = null, array $headers = []): ResponseInterface
+    public function sendRequest(string $method, string $uri, string|null $body = null, array $headers = []): ResponseInterface
     {
         $request = $this->requestFactory->createRequest($method, $uri);
 
         foreach ($headers as $name => $value) {
-            if (null !== $value) {
+            if ($value !== null) {
                 $request = $request->withHeader($name, $value);
             }
         }
 
-        if (null !== $body) {
+        if ($body !== null) {
             $request = $request->withBody($this->streamFactory->createStream($body));
         }
 

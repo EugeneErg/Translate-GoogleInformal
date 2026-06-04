@@ -10,5 +10,6 @@ final readonly class QualityCheck
         public string $html,
         public string $text,
         public array $additional,
-    ) {}
+    ) {
+    }
 }

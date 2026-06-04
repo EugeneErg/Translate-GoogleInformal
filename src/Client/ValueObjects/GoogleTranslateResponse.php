@@ -11,12 +11,13 @@ final readonly class GoogleTranslateResponse
      */
     public function __construct(
         public array $additional,
-        public ?array $translates = null,
-        public ?array $dictionary = null,
-        public ?string $detectedSourceLanguage = null,
-        public ?array $alternativeTranslations = null,
-        public ?float $confidenceValue = null,
-        public ?QualityCheck $qualityCheck = null,
-        public ?Confidence $confidence = null,
-    ) {}
+        public array|null $translates = null,
+        public array|null $dictionary = null,
+        public string|null $detectedSourceLanguage = null,
+        public array|null $alternativeTranslations = null,
+        public float|null $confidenceValue = null,
+        public QualityCheck|null $qualityCheck = null,
+        public Confidence|null $confidence = null,
+    ) {
+    }
 }

@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace EugeneErg\GoogleInformalIcuI18nTranslator;
 
 use DateInterval;
-use EugeneErg\IcuI18nTranslator\TranslatorInterface;
-use EugeneErg\ICUMessageFormatParser\Parser;
-use EugeneErg\IcuI18nTranslator\DataTransferObjects\Variable;
-use EugeneErg\IcuI18nTranslator\ValueObjects\Translated;
 use EugeneErg\GoogleInformalIcuI18nTranslator\Client\Client;
 use EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects\GoogleTranslateType;
 use EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects\SupportedLanguagesResponse;
+use EugeneErg\IcuI18nTranslator\DataTransferObjects\Variable;
+use EugeneErg\IcuI18nTranslator\TranslatorInterface;
+use EugeneErg\IcuI18nTranslator\ValueObjects\Translated;
+use EugeneErg\ICUMessageFormatParser\Parser;
 use MessageFormatter;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+
+use const PREG_SPLIT_DELIM_CAPTURE;
 
 readonly class GoogleInformalTranslator implements TranslatorInterface
 {
@@ -22,7 +24,8 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
         private Client $client,
         private Parser $parser,
         private CacheInterface $cache,
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string|Variable> $pattern
@@ -33,7 +36,7 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
         array $pattern,
         string $fromLocale,
         string $toLocale,
-        ?string $context = null,
+        string|null $context = null,
     ): array {
         $result = $this->client->single(
             text: $this->patternToText($pattern),
@@ -48,7 +51,7 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
     public function translateWithDetect(
         array $pattern,
         string $toLocale,
-        ?string $context = null,
+        string|null $context = null,
     ): Translated {
         $result = $this->client->single(
             text: $this->patternToText($pattern),
@@ -65,12 +68,12 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function canTranslate(string $toLocale, ?string $fromLocale = null): bool
+    public function canTranslate(string $toLocale, string|null $fromLocale = null): bool
     {
         // todo cache $this->client->getSupportedLanguages()
-        $fromLanguage = null === $fromLocale ? null : $this->localeToLanguage($fromLocale);
+        $fromLanguage = $fromLocale === null ? null : $this->localeToLanguage($fromLocale);
         $toLanguage = $this->localeToLanguage($toLocale);
-        $fromCheck = null === $fromLanguage;
+        $fromCheck = $fromLanguage === null;
         $toCheck = false;
 
         foreach ($this->getSupportedLanguages()->languages as $language => $options) {
@@ -88,11 +91,11 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
     private function parseString(string $text): array
     {
         $result = [];
-        $parts = preg_split('{(\{\{_\d+_\}\})}', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $parts = preg_split('{(\\{\\{_\\d+_\\}\\})}', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         foreach ($parts as $part) {
-            if ('' !== $part) {
-                $result[] = preg_match('{^\{\{_(\d+)_\}\}$}', $part, $matches)
+            if ($part !== '') {
+                $result[] = preg_match('{^\\{\\{_(\\d+)_\\}\\}$}', $part, $matches)
                     ? new Variable((int) $matches[1])
                     : MessageFormatter::formatMessage('EN', $part, []);
             }

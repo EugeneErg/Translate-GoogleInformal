@@ -10,5 +10,6 @@ final readonly class Model
         public string $hash,
         public string $fileName,
         public array $additional,
-    ) {}
+    ) {
+    }
 }

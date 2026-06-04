@@ -10,5 +10,6 @@ final readonly class Language
         public string $name,
         public bool $source,
         public bool $target,
-    ) {}
+    ) {
+    }
 }

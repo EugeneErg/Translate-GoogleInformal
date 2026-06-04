@@ -16,16 +16,33 @@ use EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects\Model;
 use EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects\QualityCheck;
 use EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects\SupportedLanguagesResponse;
 use EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects\Translate;
+use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Client\RequestExceptionInterface;
+use Throwable;
+
+use function is_array;
+use function is_string;
+
+use const JSON_THROW_ON_ERROR;
 
 readonly class Client
 {
     public function __construct(
         private PsrClient $psrClient,
         private string $apiUrl,
-    ) {}
+    ) {
+    }
+
+    private static function makeAdditional(array $data, array $remove): array
+    {
+        foreach ($remove as $item) {
+            unset($data[$item]);
+        }
+
+        return $data;
+    }
 
     /**
      * @param GoogleTranslateType[] $types
@@ -34,7 +51,7 @@ readonly class Client
         string $text,
         string $targetLanguage,
         array $types = [],
-        ?string $sourceLanguage = null,
+        string|null $sourceLanguage = null,
     ): GoogleTranslateResponse {
         $uri = $this->makeUri('translate_a/single', [
             'client' => 'gtx',
@@ -98,15 +115,6 @@ readonly class Client
         return new SupportedLanguagesResponse(languages: $languages, al: $result['al'] ?? []);
     }
 
-    private static function makeAdditional(array $data, array $remove): array
-    {
-        foreach ($remove as $item) {
-            unset($data[$item]);
-        }
-
-        return $data;
-    }
-
     private function sendRequest(string $uri): array
     {
         try {
@@ -124,7 +132,7 @@ readonly class Client
 
         try {
             $decoded = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
-        } catch (\JsonException $exception) {
+        } catch (JsonException $exception) {
             if ($statusCode >= 400) {
                 $this->handleErrorResponse($statusCode, $response->getReasonPhrase(), $exception);
             }
@@ -139,7 +147,7 @@ readonly class Client
         return $decoded;
     }
 
-    private function handleErrorResponse(int $statusCode, string $content, ?\Throwable $previous = null): ClientException
+    private function handleErrorResponse(int $statusCode, string $content, Throwable|null $previous = null): ClientException
     {
         return $statusCode >= 500
             ? new NetworkException($content, previous: $previous)
@@ -148,7 +156,7 @@ readonly class Client
 
     private function makeUri(string $path, array $parameters = []): string
     {
-        return $this->apiUrl.'/'.$path.([] === $parameters ? '' : '?'.$this->httpBuildQuery($parameters));
+        return $this->apiUrl . '/' . $path . ($parameters === [] ? '' : '?' . $this->httpBuildQuery($parameters));
     }
 
     private function httpBuildQuery(array $parameters, string $separator = '&'): string
@@ -159,10 +167,10 @@ readonly class Client
             $key = urlencode($key);
 
             if (is_string($value)) {
-                $result[] = $key.'='.urlencode($value);
+                $result[] = $key . '=' . urlencode($value);
             } elseif (is_array($value)) {
                 foreach ($value as $item) {
-                    $result[] = $key.'='.(is_string($item) ? urlencode($item) : $item);
+                    $result[] = $key . '=' . (is_string($item) ? urlencode($item) : $item);
                 }
             }
         }

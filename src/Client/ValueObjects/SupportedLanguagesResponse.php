@@ -8,7 +8,9 @@ final readonly class SupportedLanguagesResponse
 {
     /**
      * @param Language[] $languages
-     * @param mixed[]    $al
+     * @param mixed[] $al
      */
-    public function __construct(public array $languages, public array $al) {}
+    public function __construct(public array $languages, public array $al)
+    {
+    }
 }

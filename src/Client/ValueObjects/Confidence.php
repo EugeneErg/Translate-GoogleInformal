@@ -8,7 +8,7 @@ final readonly class Confidence
 {
     /**
      * @param string[] $languages
-     * @param float[]  $values
+     * @param float[] $values
      * @param string[] $languages2
      */
     public function __construct(
@@ -16,5 +16,6 @@ final readonly class Confidence
         public array $values,
         public array $languages2,
         public array $additional,
-    ) {}
+    ) {
+    }
 }

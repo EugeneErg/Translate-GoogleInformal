@@ -10,10 +10,11 @@ final readonly class Translate
      * @param Model[] $models
      */
     public function __construct(
-        public ?string $translatedText,
-        public ?string $originalText,
-        public ?string $transliteration,
-        public ?array $models,
+        public string|null $translatedText,
+        public string|null $originalText,
+        public string|null $transliteration,
+        public array|null $models,
         public array $additional,
-    ) {}
+    ) {
+    }
 }

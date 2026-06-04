@@ -8,6 +8,11 @@
       "EugeneErg\\GoogleInformalIcuI18nTranslator\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
   "minimum-stability": "stable",
   "require": {
     "psr/simple-cache": "^3.0",
@@ -18,5 +23,10 @@
     "allow-plugins": {
       "infection/extension-installer": true
     }
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.2",
+    "friendsofphp/php-cs-fixer": "^3.95",
+    "phpunit/phpunit": "^12.5"
   }
 }

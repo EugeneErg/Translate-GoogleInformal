@@ -12,5 +12,5 @@ interface ClientInterface
     /**
      * @throws ClientExceptionInterface
      */
-    public function sendRequest(string $method, string $uri, ?string $body = null, array $headers = []): ResponseInterface;
+    public function sendRequest(string $method, string $uri, string|null $body = null, array $headers = []): ResponseInterface;
 }
