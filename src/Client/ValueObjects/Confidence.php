@@ -10,6 +10,7 @@ final readonly class Confidence
      * @param string[] $languages
      * @param float[] $values
      * @param string[] $languages2
+     * @param mixed[] $additional
      */
     public function __construct(
         public array $languages,

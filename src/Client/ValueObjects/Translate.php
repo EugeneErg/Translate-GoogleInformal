@@ -7,7 +7,7 @@ namespace EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects;
 final readonly class Translate
 {
     /**
-     * @param Model[] $models
+     * @param Model[]|null $models
      * @param mixed[] $additional
      */
     public function __construct(

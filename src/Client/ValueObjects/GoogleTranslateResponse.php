@@ -8,9 +8,9 @@ final readonly class GoogleTranslateResponse
 {
     /**
      * @param mixed[] $additional
-     * @param string[] $dictionary
-     * @param Translate[] $translates
-     * @param string[] $alternativeTranslations
+     * @param Translate[]|null $translates
+     * @param mixed[]|null $dictionary
+     * @param mixed[]|null $alternativeTranslations
      */
     public function __construct(
         public array $additional,

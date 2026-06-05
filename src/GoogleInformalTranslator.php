@@ -16,7 +16,6 @@ use MessageFormatter;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
-use RuntimeException;
 use const PREG_SPLIT_DELIM_CAPTURE;
 
 readonly class GoogleInformalTranslator implements TranslatorInterface
@@ -46,11 +45,9 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
             sourceLanguage: $this->localeToLanguage($fromLocale),
         );
 
-        if (!isset($result->translates[0]->translatedText)) {
-            throw new RuntimeException('result is empty');
-        }
+        $translatedText = $result->translates[0]->translatedText ?? null;
 
-        return $this->parseString($result->translates[0]->translatedText);
+        return $this->parseString($translatedText ?? '');
     }
 
     public function translateWithDetect(
@@ -64,13 +61,11 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
             types: [GoogleTranslateType::Translation],
         );
 
-        if (!isset($result->translates[0]->translatedText, $result->detectedSourceLanguage)) {
-            throw new RuntimeException('result is empty');
-        }
+        $translatedText = $result->translates[0]->translatedText ?? null;
 
         return new Translated(
-            locale: $result->detectedSourceLanguage,
-            pattern: $this->parseString($result->translates[0]->translatedText),
+            locale: $result->detectedSourceLanguage ?? '',
+            pattern: $this->parseString($translatedText ?? ''),
         );
     }
 
@@ -98,21 +93,23 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
     }
 
     /**
-     * @return array<Variable|string>
+     * @return array<string|Variable>
      */
     private function parseString(string $text): array
     {
+        /** @var array<string|Variable> $result */
         $result = [];
-        /** @var string[] $parts */
         $parts = preg_split('{(\\{\\{_\\d+_\\}\\})}', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+        if ($parts === false) {
+            return $result;
+        }
 
         foreach ($parts as $part) {
             if ($part !== '') {
-                /** @var string|Variable $item */
-                $item = preg_match('{^\\{\\{_(\\d+)_\\}\\}$}', $part, $matches)
+                $result[] = preg_match('{^\\{\\{_(\\d+)_\\}\\}$}', $part, $matches)
                     ? new Variable((int) $matches[1])
-                    : MessageFormatter::formatMessage('EN', $part, []);
-                $result[] = $item;
+                    : (MessageFormatter::formatMessage('EN', $part, []) ?: $part);
             }
         }
 
@@ -146,8 +143,11 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
     private function getSupportedLanguages(): SupportedLanguagesResponse
     {
         if ($this->cache->has('GoogleInformalTranslator:getSupportedLanguages')) {
-            /** @var SupportedLanguagesResponse */
-            return $this->cache->get('GoogleInformalTranslator:getSupportedLanguages');
+            $cached = $this->cache->get('GoogleInformalTranslator:getSupportedLanguages');
+
+            if ($cached instanceof SupportedLanguagesResponse) {
+                return $cached;
+            }
         }
 
         $result = $this->client->getSupportedLanguages();

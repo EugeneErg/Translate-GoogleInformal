@@ -21,6 +21,8 @@ final readonly class PsrClient implements BaseClientInterface
     }
 
     /**
+     * @param array<string, string|null> $headers
+     *
      * @throws ClientExceptionInterface
      */
     public function sendRequest(string $method, string $uri, string|null $body = null, array $headers = []): ResponseInterface
