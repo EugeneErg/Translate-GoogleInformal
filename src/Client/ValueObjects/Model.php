@@ -6,6 +6,9 @@ namespace EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects;
 
 final readonly class Model
 {
+    /**
+     * @param mixed[] $additional
+     */
     public function __construct(
         public string $hash,
         public string $fileName,

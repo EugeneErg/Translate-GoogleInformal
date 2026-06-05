@@ -6,6 +6,9 @@ namespace EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects;
 
 final readonly class QualityCheck
 {
+    /**
+     * @param mixed[] $additional
+     */
     public function __construct(
         public string $html,
         public string $text,

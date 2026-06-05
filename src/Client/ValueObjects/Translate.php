@@ -8,6 +8,7 @@ final readonly class Translate
 {
     /**
      * @param Model[] $models
+     * @param mixed[] $additional
      */
     public function __construct(
         public string|null $translatedText,

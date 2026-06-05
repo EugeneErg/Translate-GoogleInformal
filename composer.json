@@ -17,7 +17,10 @@
   "require": {
     "psr/simple-cache": "^3.0",
     "ext-intl": "*",
-    "eugene-erg/icu-i18n-translator": "^1.0"
+    "eugene-erg/icu-i18n-translator": "^1.0",
+    "psr/http-factory": "^1.1",
+    "psr/http-message": "^2.0",
+    "psr/http-client": "^1.0"
   },
   "config": {
     "allow-plugins": {

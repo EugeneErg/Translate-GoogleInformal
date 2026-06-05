@@ -7,7 +7,10 @@ namespace EugeneErg\GoogleInformalIcuI18nTranslator\Client\ValueObjects;
 final readonly class GoogleTranslateResponse
 {
     /**
+     * @param mixed[] $additional
+     * @param string[] $dictionary
      * @param Translate[] $translates
+     * @param string[] $alternativeTranslations
      */
     public function __construct(
         public array $additional,

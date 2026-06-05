@@ -16,6 +16,7 @@ use MessageFormatter;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
+use RuntimeException;
 use const PREG_SPLIT_DELIM_CAPTURE;
 
 readonly class GoogleInformalTranslator implements TranslatorInterface
@@ -45,6 +46,10 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
             sourceLanguage: $this->localeToLanguage($fromLocale),
         );
 
+        if (!isset($result->translates[0]->translatedText)) {
+            throw new RuntimeException('result is empty');
+        }
+
         return $this->parseString($result->translates[0]->translatedText);
     }
 
@@ -58,6 +63,10 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
             targetLanguage: $this->localeToLanguage($toLocale),
             types: [GoogleTranslateType::Translation],
         );
+
+        if (!isset($result->translates[0]->translatedText, $result->detectedSourceLanguage)) {
+            throw new RuntimeException('result is empty');
+        }
 
         return new Translated(
             locale: $result->detectedSourceLanguage,
@@ -88,16 +97,22 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
         return false;
     }
 
+    /**
+     * @return array<Variable|string>
+     */
     private function parseString(string $text): array
     {
         $result = [];
+        /** @var string[] $parts */
         $parts = preg_split('{(\\{\\{_\\d+_\\}\\})}', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         foreach ($parts as $part) {
             if ($part !== '') {
-                $result[] = preg_match('{^\\{\\{_(\\d+)_\\}\\}$}', $part, $matches)
+                /** @var string|Variable $item */
+                $item = preg_match('{^\\{\\{_(\\d+)_\\}\\}$}', $part, $matches)
                     ? new Variable((int) $matches[1])
                     : MessageFormatter::formatMessage('EN', $part, []);
+                $result[] = $item;
             }
         }
 
@@ -131,6 +146,7 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
     private function getSupportedLanguages(): SupportedLanguagesResponse
     {
         if ($this->cache->has('GoogleInformalTranslator:getSupportedLanguages')) {
+            /** @var SupportedLanguagesResponse */
             return $this->cache->get('GoogleInformalTranslator:getSupportedLanguages');
         }
 
