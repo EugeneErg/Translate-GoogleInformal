@@ -102,7 +102,7 @@ readonly class GoogleInformalTranslator implements TranslatorInterface
         $parts = preg_split('{(\\{\\{_\\d+_\\}\\})}', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         if ($parts === false) {
-            return $result;
+            return $result; // @codeCoverageIgnore
         }
 
         foreach ($parts as $part) {

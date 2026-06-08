@@ -31,7 +31,7 @@ use const JSON_THROW_ON_ERROR;
 readonly class Client
 {
     public function __construct(
-        private PsrClient $psrClient,
+        private ClientInterface $psrClient,
         private string $apiUrl,
     ) {
     }
@@ -190,7 +190,7 @@ readonly class Client
             $decoded = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
             if ($statusCode >= 400) {
-                $this->handleErrorResponse($statusCode, $response->getReasonPhrase(), $exception);
+                throw $this->handleErrorResponse($statusCode, $response->getReasonPhrase(), $exception);
             }
 
             throw new ResponseJsonException('Failed to decode response body', previous: $exception);
